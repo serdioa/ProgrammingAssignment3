@@ -45,7 +45,8 @@ colnames(X_merged) <- gsub("\\(\\)", "", features$V2)
 colnames(X_merged) <- gsub("(mean|std)-([X-Z])", "\\2-\\1", colnames(X_merged))
 
 # Find columns which contains either mean or standard deviation, that is
-# columns with names ending in "-mean" or "-std".
+# columns with names ending in "-mean" or "-std". Keep only these columns
+# and discard the rest.
 select_cols = grepl("(-mean|-std)$", colnames(X_merged))
 X_merged = X_merged[,select_cols]
 
@@ -58,8 +59,8 @@ colnames(X_merged) <- gsub("-", ".", colnames(X_merged))
 
 # Combined prepared data by columns:
 # - Subject ID
-# - Activity label
 # - Mean and standard deviation for each measurement
+# - Activity ID.
 X_merged <- cbind(subject_merged, X_merged, y_merged)
 
 # Merge main data table with activity labels. Note that we can't merge with
@@ -70,7 +71,7 @@ X_merged <- cbind(subject_merged, X_merged, y_merged)
 # already ensured that both tables share the column name "activityId".
 X_merged <- merge(X_merged, activity_labels)
 
-# Reorder columns: exclude activity ID, move activity lable to the front.
+# Reorder columns: exclude activity ID, move activity label to the front.
 X_merged <- select(X_merged, subjectId, activity, tBodyAcc.X.mean:fBodyBodyGyroJerkMag.std)
 
 # Calculate average for each activity and each subject.
@@ -81,3 +82,5 @@ X_summarized <- X_merged %>%
 # Export the summarized data set into a file.
 write.table(X_summarized, file="X_summarized.txt", row.names = FALSE)
 
+# Use the following command to load the created file into R:
+# read.table("X_summarized.txt", header = TRUE)
